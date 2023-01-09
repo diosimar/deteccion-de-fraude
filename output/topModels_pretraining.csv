@@ -1,0 +1,3 @@
+Model,acc_score
+RandomForestClassifier,0.7485714285714286
+GradientBoostingClassifier,0.7281203007518797

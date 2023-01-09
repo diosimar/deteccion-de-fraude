@@ -78,7 +78,7 @@ for i in trainSet.columns :
         testSet[i] =   testSet[i].round(3)
         
 ### almacenamiento local de archivos procesdos 
-trainSet .to_csv('Data/trainSet .csv', encoding='utf-8',index = None)
+trainSet .to_csv('Data/trainSet.csv', encoding='utf-8',index = None)
 testSet.to_csv('Data/testSet.csv', encoding='utf-8',index = None)
 
 ######################################################################################
