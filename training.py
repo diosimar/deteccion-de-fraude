@@ -105,7 +105,7 @@ parameters = {
 name = []
 accuracy = []
 mod = []
-for i in range(0,3):
+for i in range(0,2):
     modelo = eval(list(topModels.Model)[i] + '(random_state=42)')
     locals()["grid_" + str(i)] = GridSearchCV(  modelo , parameters[list(topModels.Model)[i]],cv=5)
     locals()["grid_" + str(i)].fit(xtrain ,ytrain)
