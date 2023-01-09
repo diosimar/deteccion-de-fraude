@@ -7,11 +7,9 @@ Created on Sun Jan  8 18:06:17 2023
 # se importa las ribrerias(modulos) necesarios para  el analisis exploratorio de  datos para determinar la calidad del dataset
 
 import pandas as pd
-import numpy as np
 from utils.functions import cambio_formato, smote_balanceo_clases
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import LabelEncoder
-from imblearn.over_sampling import SMOTE
 from sklearn.model_selection import train_test_split
 
 
@@ -49,60 +47,48 @@ x, y = df_[df_ .columns.difference(['Fraude'])] , df_.Fraude # identificar carac
 
 
 
-# división del conjutno de datos
+# división del conjutno de datos considerando el 20 % para testing de modelo ML
 x_train, x_test, y_train, y_test = train_test_split(
     x, y, test_size=0.2, stratify=y,
     random_state=20)
 
 #____________________________________________ balanceo de clases _____________________________________________#
+train_data = pd.concat([x_train, y_train], axis=1) # se concatena los features y el target de entrenamiento
 
-oversampling = smote_balanceo_clases(df_)
+oversampling = smote_balanceo_clases(train_data) # se realiza balanceo por medio de teccnicas de data aumentations con remuestreo (smote) para el grupo de transacciones fraudulentas 
+No_fraud= train_data[train_data.Fraude ==0]
 
-'''
-# # targets y features
-targets = ["Fraude"]
-features = list(df_.columns)
-
-for tar in targets:
-    features.remove(tar)
-
-x = df_[features]
-y = df_[targets]
-
-# técnica  de oversampling para balanceo de  clases
-oversample = SMOTE(sampling_strategy="auto", random_state=20)
-
-x_oversampling, y_oversampling = oversample.fit_resample(x, y)
-
-# concatenar y eliminar duplicados para tener toda la data junta
-data_all = pd.concat([x_oversampling, y_oversampling], axis=1)
-
-data_all = pd.concat([data_all, df_], axis=0)
-data_all.drop_duplicates(inplace=True)
+trainSet = pd.concat([oversampling, No_fraud])
+testSet  = pd.concat([x_test, y_test], axis=1)
 
 
-#####3y_oversampling.value_counts()###############
+#_______ organizar formato de campos_________# 
+ 
+int_num = ['A', 'B', 'C', 'D', 'E', 'H', 'I', 'L', 'M', 'N', 'O', 'P', 'Fraude']
+cols_float = ['S', 'Q']
+for i in trainSet.columns :
+    if i in int_num:
+        trainSet[i] =   trainSet[i].round(0).astype(int)
+        testSet[i] =   testSet[i].round(0).astype(int)
+    elif  i in cols_float :
+        trainSet[i] =  trainSet[i].round(2)
+        testSet[i] =   testSet[i].round(2)
+    else :
+        trainSet[i] =  trainSet[i].round(3)
+        testSet[i] =   testSet[i].round(3)
+        
+### almacenamiento local de archivos procesdos 
+trainSet .to_csv('Data/trainSet .csv', encoding='utf-8',index = None)
+testSet.to_csv('Data/testSet.csv', encoding='utf-8',index = None)
 
-#######data_all.Fraude.value_counts()
-
-# encontrar filas en data_all que no estan en el original, el oversampling
-oversampling = data_all.merge(df_, how='outer', indicator=True).loc[
-    lambda x: x['_merge'] == 'left_only']
-
-oversampling.drop(columns=['_merge'], inplace=True)
-
-'''
-
-#fraud = df_[df_["Fraude"] == 1]
-#data_all_prueba = pd.concat([oversampling, fraud ], axis=0)
 ######################################################################################
-
+#### metodo de balanceo de datos utilizando redes neuronales  bajo modelos GANG , opcional 
 '''
 from tabgan.sampler import GANGenerator
 # from tabgan.sampler import OriginalGenerator, GANGenerator
 
 # cargar datos originales
-path = "data/creditcard_featured.csv"
+path = "data/card_featured.csv"
 df = pd.read_csv(path)
 
 # separar los datos de fraude para usarlos en el conjunto de test
