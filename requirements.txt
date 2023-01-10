@@ -1,0 +1,11 @@
+os
+python == 3.9.15
+numpy == 1.24.1
+scipy == 1.10.0
+matplotlib == 3.5.2
+scikit-learn == 1.1.2
+joblib == 1.2.0
+Pillow == 9.4.0
+pandas == 1.5.2
+seaborn == 0.12.2
+imbalanced-learn==0.10.1
